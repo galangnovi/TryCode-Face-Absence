@@ -27,7 +27,7 @@ interface Employee {
 interface AttendanceDB {
   id: string;
   created_at: string;
-  employees: Employee []; // note: array
+  employees: Employee [] ; // note: array
 }
 
 
