@@ -51,12 +51,15 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         return;
       }
 
-      const formatted = (data as AttendanceDB[]).map((item) => ({
-        id: item.id,
-        employee_name: item.employees[0].name,
-        arrival_time: item.created_at,
-        score: calculateScore(item.created_at),
-      }));
+      const formatted = (data as AttendanceDB[]).map((item) => {
+        const employee = item.employees[0]; // ambil index 0
+        return {
+            id: item.id,
+            employee_name: employee?.name || "Unknown",
+            arrival_time: item.created_at,
+            score: calculateScore(item.created_at),
+        };
+        });
 
       setAttendances(formatted);
       setLoading(false);
