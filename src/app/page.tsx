@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import * as faceapi from "@vladmandic/face-api";
 import { supabase } from "../lib/supabase";
 import AttendanceList from "@/componens/rightside";
 
@@ -13,6 +12,7 @@ export default function Home() {
 
   useEffect(() => {
     const loadModels = async () => {
+      const faceapi = await import("@vladmandic/face-api");
       const MODEL_URL = "/models";
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
       await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
@@ -33,6 +33,7 @@ export default function Home() {
 
   const handleAbsensi = async () => {
     if (!videoRef.current) return;
+    const faceapi = await import("@vladmandic/face-api");
 
     const detection = await faceapi
       .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
