@@ -54,7 +54,7 @@ export default function Out() {
     }
 
 
-    let matchUser: any = null;
+    let matchUser = null;
     let minDistance = 1.0;
 
     for (const emp of employees!) {
