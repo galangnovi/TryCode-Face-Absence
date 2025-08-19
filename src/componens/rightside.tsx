@@ -18,6 +18,18 @@ interface AttendanceListProps {
   refreshTrigger?: boolean; // kalau berubah, fetch ulang
 }
 
+interface Employee {
+  id: string;
+  name: string;
+  face_descriptor: number[];
+}
+
+interface AttendanceDB {
+  id: string;
+  created_at: string;
+  employees: Employee[]; // note: array
+}
+
 
 export default function AttendanceList({ refreshTrigger }: AttendanceListProps) {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -39,7 +51,7 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         return;
       }
 
-      const formatted = (data as any).map((item: any) => ({
+      const formatted = (data as AttendanceDB[]).map((item: any) => ({
         id: item.id,
         employee_name: item.employees.name,
         arrival_time: item.created_at,
