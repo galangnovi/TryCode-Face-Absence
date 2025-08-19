@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import * as faceapi from "@vladmandic/face-api";
 import { supabase } from "../../lib/supabase";
 
 export default function RegisterPage() {
@@ -11,6 +10,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     const loadModels = async () => {
+      const faceapi = await import("@vladmandic/face-api");
       const MODEL_URL = "/models";
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
       await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
@@ -29,7 +29,7 @@ export default function RegisterPage() {
   const handleRegister = async () => {
     console.log("sampai disini")
     if (!videoRef.current || !name) return;
-
+    const faceapi = await import("@vladmandic/face-api");
     const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
     const detection = await faceapi
       .detectSingleFace(videoRef.current, options)
