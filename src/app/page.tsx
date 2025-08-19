@@ -1,103 +1,105 @@
-import Image from "next/image";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import * as faceapi from "@vladmandic/face-api";
+import { supabase } from "../lib/supabase";
+import AttendanceList from "@/componens/rightside";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [status, setStatus] = useState("Loading models...");
+  const [refreshAttendance, setRefreshAttendance] = useState(false);
+
+  useEffect(() => {
+    const loadModels = async () => {
+      const MODEL_URL = "/models";
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+      setStatus("Models loaded, ready!");
+      startVideo();
+    };
+    loadModels();
+  }, [setStatus]);
+
+  const startVideo = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+    if (videoRef.current) videoRef.current.srcObject = stream;
+  };
+
+  const euclideanDistance = (a: number[], b: number[]) =>
+    Math.sqrt(a.map((val, i) => (val - b[i]) ** 2).reduce((acc, v) => acc + v, 0));
+
+  const handleAbsensi = async () => {
+    if (!videoRef.current) return;
+
+    const detection = await faceapi
+      .detectSingleFace(videoRef.current, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+    if (!detection) {
+      setStatus("❌ Wajah tidak terdeteksi");
+      return;
+    }
+
+    const descriptorArray = Array.from(detection.descriptor);
+
+    // ambil semua karyawan dari supabase
+    const { data: employees, error } = await supabase.from("employees").select("*");
+    if (error) {
+      setStatus("❌ Gagal ambil data: " + error.message);
+      return;
+    }
+
+    async function deleteOldEmployees() {
+  const { error } = await supabase
+    .from('employees')
+    .delete()
+    .lt('created_at', new Date(Date.now() -  12 * 60 * 60 * 1000).toISOString()); // 12 jam
+
+  if (error) console.error(error);
+  else console.log('Old employees deleted');
+}
+
+deleteOldEmployees();
+
+    let matchUser: any = null;
+    let minDistance = 1.0;
+
+    for (const emp of employees!) {
+      const distance = euclideanDistance(emp.face_descriptor, descriptorArray);
+      if (distance < 0.6 && distance < minDistance) {
+        matchUser = emp;
+        minDistance = distance;
+      }
+    }
+
+    if (matchUser) {
+      // catat absensi
+      await supabase.from("attendance").insert({ employee_id: matchUser.id });
+      setStatus(`✅ Absen berhasil: ${matchUser.name}`);
+      setRefreshAttendance(prev => !prev);
+    } else {
+      setStatus("❌ Wajah tidak dikenali");
+    }
+  };
+  return (
+    <div className="flex">
+      <AttendanceList refreshTrigger={refreshAttendance}/>
+      <div className="flex flex-col items-center gap-4 p-6">
+      <h1 className="text-2xl font-bold">Absensi Siswa</h1>
+      <video ref={videoRef} autoPlay muted width="400" height="300" className="rounded-lg shadow" />
+      <button
+        onClick={handleAbsensi}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow cursor-pointer hover:!bg-blue-400"
+      >
+        Absen Sekarang
+      </button>
+      <p className="text-xl">{status}</p>
     </div>
+    </div>
+    
   );
 }
