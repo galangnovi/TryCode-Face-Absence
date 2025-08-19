@@ -61,7 +61,7 @@ export default function RegisterPage() {
       <h1 className="text-2xl font-bold">Registrasi Siswa</h1>
       <input
         type="text"
-        placeholder="Nama karyawan"
+        placeholder="Nama siswa"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="border px-3 py-2 rounded"
