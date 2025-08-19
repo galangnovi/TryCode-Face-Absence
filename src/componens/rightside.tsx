@@ -24,10 +24,14 @@ interface Employee {
   face_descriptor: number[];
 }
 
-interface AttendanceDB {
+interface AttendanceRaw {
   id: string;
   created_at: string;
-  employees: Employee [] ; // note: array
+  employees: {
+    id: string;
+    name: string;
+    face_descriptor: number[];
+  }; // objek tunggal sesuai log terbaru
 }
 
 
@@ -51,8 +55,8 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         return;
       }
 
-      const formatted = (data as AttendanceDB[]).map((item) => {
-        const employee = item.employees[0];
+      const formatted = (data as any).map((item:any) => {
+        const employee = item.employees;
         console.log(item)
         return {
             id: item.id,
