@@ -53,6 +53,7 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
 
       const formatted = (data as AttendanceDB[]).map((item) => {
         const employee = item.employees[0];
+        console.log(item)
         return {
             id: item.id,
             employee_name: employee?.name,
