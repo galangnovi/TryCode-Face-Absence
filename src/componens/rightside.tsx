@@ -27,7 +27,7 @@ interface Employee {
 interface AttendanceDB {
   id: string;
   created_at: string;
-  employees: Employee[]; // note: array
+  employees: Employee []; // note: array
 }
 
 
@@ -42,7 +42,7 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         .select(`
             id,
             created_at,
-            employees(name)
+            employees!inner(id, name, face_descriptor)
         `);
 
       if (error) {
