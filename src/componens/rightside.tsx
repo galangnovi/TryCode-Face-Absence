@@ -52,10 +52,9 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
       }
 
       const formatted = (data as AttendanceDB[]).map((item) => {
-        const employee = item.employees[0]; // ambil index 0
         return {
             id: item.id,
-            employee_name: employee?.name || "Unknown",
+            employee_name: item.employees[0].name || "Unknown",
             arrival_time: item.created_at,
             score: calculateScore(item.created_at),
         };
