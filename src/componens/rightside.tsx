@@ -42,7 +42,7 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         .select(`
             id,
             created_at,
-            employees!inner(name)
+            employees(name)
         `);
 
       if (error) {
