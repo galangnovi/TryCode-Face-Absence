@@ -55,7 +55,7 @@ export default function AttendanceList({ refreshTrigger }: AttendanceListProps) 
         return;
       }
 
-      const formatted = (data as any).map((item:any) => {
+      const formatted = (data as []).map((item:AttendanceRaw) => {
         const employee = item.employees;
         console.log(item)
         return {
