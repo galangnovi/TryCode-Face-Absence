@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Star, StarHalf, StarOff } from "lucide-react";
+import { Star, StarOff } from "lucide-react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -17,6 +17,7 @@ interface Attendance {
 interface AttendanceListProps {
   refreshTrigger?: boolean; // kalau berubah, fetch ulang
 }
+
 
 export default function AttendanceList({ refreshTrigger }: AttendanceListProps) {
   const [attendances, setAttendances] = useState<Attendance[]>([]);

@@ -67,7 +67,7 @@ export default function Out() {
 
     if (matchUser) {
   // hapus record absensi untuk employee_id yang cocok
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from("attendance")
         .delete()
         .eq("employee_id", matchUser.id);
