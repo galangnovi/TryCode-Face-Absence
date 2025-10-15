@@ -128,9 +128,6 @@ Admin Dashboard Updated in Real-Time
 
 This is a learning project, built to simulate a real-world face attendance application.
 It can be extended with:
-
-Cloud-based face recognition (e.g., AWS Rekognition / Google Vision)
-
-Mobile app integration
+------------------------
 
 Attendance analytics and reporting dashboard
