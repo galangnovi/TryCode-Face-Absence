@@ -28,7 +28,7 @@ It demonstrates how to capture webcam input, detect and recognize faces, and rec
 | Layer | Technology |
 |-------|-------------|
 | **Frontend Framework** | Next.js |
-| **Face Detection** | TensorFlow.js / face-api.js |
+| **Face Detection** | face-api.js |
 | **Styling** | Tailwind CSS |
 | **Database** |  Supabase |
 | **Deployment** | Vercel (Frontend)|
