@@ -27,13 +27,11 @@ It demonstrates how to capture webcam input, detect and recognize faces, and rec
 
 | Layer | Technology |
 |-------|-------------|
-| **Frontend Framework** | Next.js (App Router) |
+| **Frontend Framework** | Next.js |
 | **Face Detection** | TensorFlow.js / face-api.js |
-| **State Management** | React Context / Redux Toolkit |
-| **Styling** | Tailwind CSS / shadcn/ui |
-| **Database** | PostgreSQL / Supabase / Prisma ORM |
-| **Auth** | NextAuth.js |
-| **Deployment** | Vercel (Frontend) / Railway (DB) |
+| **Styling** | Tailwind CSS |
+| **Database** |  Supabase |
+| **Deployment** | Vercel (Frontend)|
 
 ---
 
